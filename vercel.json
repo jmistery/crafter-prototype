@@ -1,18 +1,4 @@
 {
-  "version": 2,
-  "name": "crafter-prototype",
-  "builds": [
-    {
-      "src": "**/*.html",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
-    }
-  ],
   "cleanUrls": true,
   "trailingSlash": false
 }
