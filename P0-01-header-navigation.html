@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P0-01: Logo + 页面导航 + 语言切换 + 搜索入口 + 用户中心入口</title>
+    <!-- Element UI CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- Vue -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <!-- Element UI JS -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+        }
+        
+        /* Header 样式 */
+        .header-container {
+            background-color: #ffffff;
+            box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 80px;
+        }
+        
+        /* Logo 样式 */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .logo-image {
+            height: 60px;
+            width: auto;
+        }
+        
+        /* 导航样式 */
+        .nav-menu {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .el-menu {
+            border: none !important;
+        }
+        
+        .el-menu-item, .el-submenu__title {
+            font-size: 16px;
+            padding: 0 20px;
+            height: 80px;
+            line-height: 80px;
+        }
+        
+        /* 右侧工具栏 */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .toolbar-icon {
+            cursor: pointer;
+            font-size: 20px;
+            color: #606266;
+            transition: color 0.3s;
+        }
+        
+        .toolbar-icon:hover {
+            color: #409EFF;
+        }
+        
+        /* 响应式 - 平板端 */
+        @media (max-width: 1199px) and (min-width: 768px) {
+            .header-wrapper {
+                height: 70px;
+            }
+            .logo-image {
+                height: 50px;
+            }
+            .el-menu-item, .el-submenu__title {
+                padding: 0 15px;
+                height: 70px;
+                line-height: 70px;
+                font-size: 15px;
+            }
+        }
+        
+        /* 响应式 - 移动端 */
+        @media (max-width: 767px) {
+            .header-wrapper {
+                height: 60px;
+            }
+            .logo-image {
+                height: 40px;
+            }
+            .nav-menu {
+                display: none;
+            }
+            .mobile-menu-btn {
+                display: block !important;
+            }
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        /* 搜索对话框样式 */
+        .search-dialog .el-input {
+            margin-bottom: 20px;
+        }
+        
+        /* 用户中心下拉菜单样式 */
+        .user-dropdown {
+            cursor: pointer;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #409EFF;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Header 组件 -->
+        <div class="header-container">
+            <div class="header-wrapper">
+                <!-- Logo -->
+                <div class="logo-container" @click="handleLogoClick">
+                    <svg class="logo-image" viewBox="0 0 180 60" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="10" y="10" width="40" height="40" fill="#409EFF" rx="5"/>
+                        <text x="65" y="38" font-family="Arial" font-size="24" font-weight="bold" fill="#303133">五岳CMS</text>
+                    </svg>
+                </div>
+                
+                <!-- 导航菜单 - 桌面端 -->
+                <div class="nav-menu">
+                    <el-menu 
+                        :default-active="activeIndex" 
+                        mode="horizontal" 
+                        @select="handleSelect"
+                        background-color="#ffffff"
+                        text-color="#303133"
+                        active-text-color="#409EFF">
+                        
+                        <el-menu-item index="1">首页</el-menu-item>
+                        
+                        <el-submenu index="2">
+                            <template slot="title">关于我们</template>
+                            <el-menu-item index="2-1">公司简介</el-menu-item>
+                            <el-menu-item index="2-2">企业文化</el-menu-item>
+                            <el-menu-item index="2-3">发展历程</el-menu-item>
+                        </el-submenu>
+                        
+                        <el-submenu index="3">
+                            <template slot="title">产品中心</template>
+                            <el-menu-item index="3-1">产品列表</el-menu-item>
+                            <el-menu-item index="3-2">产品详情</el-menu-item>
+                            <el-menu-item index="3-3">解决方案</el-menu-item>
+                        </el-submenu>
+                        
+                        <el-submenu index="4">
+                            <template slot="title">服务支持</template>
+                            <el-menu-item index="4-1">服务概览</el-menu-item>
+                            <el-menu-item index="4-2">常见问题</el-menu-item>
+                            <el-menu-item index="4-3">技术支持</el-menu-item>
+                        </el-submenu>
+                        
+                        <el-menu-item index="5">联系我们</el-menu-item>
+                    </el-menu>
+                </div>
+                
+                <!-- 右侧工具栏 -->
+                <div class="toolbar">
+                    <!-- 语言切换 -->
+                    <el-dropdown @command="handleLanguageChange">
+                        <span class="toolbar-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: middle;">
+                                <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                                <ellipse cx="12" cy="12" rx="5" ry="10" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                                <path d="M2 12 L22 12 M12 2 Q17 12 12 22 M12 2 Q7 12 12 22" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                            </svg>
+                        </span>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item command="zh">中文</el-dropdown-item>
+                            <el-dropdown-item command="en">English</el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
+                    
+                    <!-- 搜索入口 -->
+                    <span class="toolbar-icon" @click="searchVisible = true">
+                        <i class="el-icon-search"></i>
+                    </span>
+                    
+                    <!-- 用户中心入口 -->
+                    <el-dropdown @command="handleUserCommand">
+                        <div class="user-dropdown">
+                            <div class="user-avatar">
+                                <i class="el-icon-user"></i>
+                            </div>
+                        </div>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item command="profile">个人中心</el-dropdown-item>
+                            <el-dropdown-item command="settings">设置</el-dropdown-item>
+                            <el-dropdown-item divided command="logout">退出登录</el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
+                    
+                    <!-- 移动端菜单按钮 -->
+                    <span class="mobile-menu-btn toolbar-icon" @click="drawerVisible = true">
+                        <i class="el-icon-menu"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 搜索对话框 -->
+        <el-dialog
+            title="搜索"
+            :visible.sync="searchVisible"
+            width="600px"
+            :append-to-body="true">
+            <el-input
+                v-model="searchKeyword"
+                placeholder="请输入关键词搜索..."
+                prefix-icon="el-icon-search"
+                clearable
+                @keyup.enter.native="handleSearch">
+            </el-input>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="searchVisible = false">取消</el-button>
+                <el-button type="primary" @click="handleSearch">搜索</el-button>
+            </div>
+        </el-dialog>
+        
+        <!-- 移动端导航抽屉 -->
+        <el-drawer
+            title="导航菜单"
+            :visible.sync="drawerVisible"
+            direction="rtl"
+            size="80%">
+            <el-menu 
+                :default-active="activeIndex" 
+                @select="handleMobileSelect">
+                <el-menu-item index="1">
+                    <i class="el-icon-s-home"></i>
+                    <span>首页</span>
+                </el-menu-item>
+                
+                <el-submenu index="2">
+                    <template slot="title">
+                        <i class="el-icon-office-building"></i>
+                        <span>关于我们</span>
+                    </template>
+                    <el-menu-item index="2-1">公司简介</el-menu-item>
+                    <el-menu-item index="2-2">企业文化</el-menu-item>
+                    <el-menu-item index="2-3">发展历程</el-menu-item>
+                </el-submenu>
+                
+                <el-submenu index="3">
+                    <template slot="title">
+                        <i class="el-icon-box"></i>
+                        <span>产品中心</span>
+                    </template>
+                    <el-menu-item index="3-1">产品列表</el-menu-item>
+                    <el-menu-item index="3-2">产品详情</el-menu-item>
+                    <el-menu-item index="3-3">解决方案</el-menu-item>
+                </el-submenu>
+                
+                <el-submenu index="4">
+                    <template slot="title">
+                        <i class="el-icon-s-order"></i>
+                        <span>服务支持</span>
+                    </template>
+                    <el-menu-item index="4-1">服务概览</el-menu-item>
+                    <el-menu-item index="4-2">常见问题</el-menu-item>
+                    <el-menu-item index="4-3">技术支持</el-menu-item>
+                </el-submenu>
+                
+                <el-menu-item index="5">
+                    <i class="el-icon-phone"></i>
+                    <span>联系我们</span>
+                </el-menu-item>
+            </el-menu>
+        </el-drawer>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data() {
+                return {
+                    activeIndex: '1',
+                    searchVisible: false,
+                    searchKeyword: '',
+                    drawerVisible: false,
+                    currentLanguage: 'zh'
+                }
+            },
+            methods: {
+                handleLogoClick() {
+                    this.$message.success('返回首页');
+                    this.activeIndex = '1';
+                },
+                handleSelect(key, keyPath) {
+                    console.log('Selected:', key, keyPath);
+                    this.$message.info(`导航至: ${key}`);
+                },
+                handleMobileSelect(key) {
+                    this.handleSelect(key);
+                    this.drawerVisible = false;
+                },
+                handleLanguageChange(command) {
+                    this.currentLanguage = command;
+                    const langText = command === 'zh' ? '中文' : 'English';
+                    this.$message.success(`切换语言为: ${langText}`);
+                },
+                handleSearch() {
+                    if (this.searchKeyword.trim()) {
+                        this.$message.info(`搜索: ${this.searchKeyword}`);
+                        this.searchVisible = false;
+                    } else {
+                        this.$message.warning('请输入搜索关键词');
+                    }
+                },
+                handleUserCommand(command) {
+                    const messages = {
+                        profile: '进入个人中心',
+                        settings: '进入设置页面',
+                        logout: '已退出登录'
+                    };
+                    this.$message({
+                        message: messages[command],
+                        type: command === 'logout' ? 'warning' : 'success'
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
