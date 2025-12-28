@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Form - X7 / X7 Plus</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .browser-frame {
+            background: #e0e0e0;
+            padding: 8px;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .browser-tabs {
+            background: #c0c0c0;
+            padding: 8px;
+            border-radius: 6px 6px 0 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab {
+            background: #fff;
+            padding: 6px 12px;
+            border-radius: 4px 4px 0 0;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal {
+            background: white;
+            width: 100%;
+            max-width: 800px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            margin: 20px auto;
+        }
+
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #999;
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        .modal-body {
+            padding: 0;
+            max-height: calc(100vh - 180px);
+            overflow-y: auto;
+        }
+
+        .breadcrumb {
+            padding: 16px 20px;
+            background: #fafafa;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .breadcrumb-text {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .page-type-label {
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .page-type-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .section {
+            padding: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            cursor: pointer;
+            background-color: #f5f5f5;
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin: -20px -20px 16px -20px;
+            padding: 16px 20px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .section-toggle {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .toggle-icon {
+            color: #2196F3;
+            font-size: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group-with-ai {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .form-label .checkmark {
+            color: #4CAF50;
+            font-size: 12px;
+        }
+
+        .create-ai-btn {
+            background: none;
+            border: none;
+            color: #2196F3;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .create-ai-btn:hover {
+            background: #e3f2fd;
+        }
+
+        .create-ai-btn .icon {
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #2196F3;
+        }
+
+        .form-input-with-btn {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .char-count {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: #999;
+        }
+
+        .edit-btn {
+            padding: 8px 16px;
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .edit-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+
+        .checkbox {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .checkbox-label {
+            font-size: 13px;
+            color: #555;
+            cursor: pointer;
+        }
+
+        .form-textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            position: relative;
+        }
+
+        .textarea-wrapper {
+            position: relative;
+        }
+
+        .textarea-count {
+            position: absolute;
+            right: 12px;
+            bottom: 12px;
+            font-size: 12px;
+            color: #999;
+            background: white;
+            padding: 2px 4px;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+            background: white;
+            cursor: pointer;
+        }
+
+        .image-upload {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .image-preview {
+            margin-bottom: 12px;
+        }
+
+        .image-preview img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+
+        .image-path {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 12px;
+            word-break: break-all;
+        }
+
+        .image-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        /* 新的 Image 模块样式 */
+        .image-upload-new {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 16px;
+            background: white;
+        }
+
+        .image-path-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #666;
+            background: #fafafa;
+            margin-bottom: 16px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .image-preview-new {
+            margin-bottom: 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            background: #fafafa;
+        }
+
+        .image-preview-new img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .image-actions-new {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-start;
+        }
+
+        .btn-image {
+            padding: 8px 20px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            color: #333;
+            transition: all 0.2s;
+        }
+
+        .btn-image:hover {
+            background: #f5f5f5;
+            border-color: #999;
+        }
+
+        .btn-image-delete {
+            color: #333;
+        }
+
+        .btn-image-delete:hover {
+            background: #f5f5f5;
+            border-color: #999;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            background: white;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background: #f5f5f5;
+        }
+
+        .btn-delete {
+            color: #f44336;
+            border-color: #f44336;
+        }
+
+        .btn-delete:hover {
+            background: #ffebee;
+        }
+
+        .data-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            background: #fafafa;
+        }
+
+        .data-item-content {
+            flex: 1;
+        }
+
+        .data-item-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .data-item-path {
+            font-size: 11px;
+            color: #999;
+            font-family: monospace;
+        }
+
+        .data-item-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .data-item-count {
+            font-size: 12px;
+            color: #999;
+        }
+
+        /* 数据模块通用布局 (Product Data, Container, Hreflang Config) */
+        .data-module-wrapper {
+            margin-bottom: 0;
+        }
+
+        .data-module-container {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 12px;
+            background: white;
+        }
+
+        .data-module-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            background: #f8f9fa;
+        }
+
+        .data-module-item-content {
+            flex: 1;
+        }
+
+        .data-module-item-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+        }
+
+        .data-module-item-path {
+            font-size: 11px;
+            color: #999;
+            font-family: 'Courier New', monospace;
+        }
+
+        .data-module-item-icons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .data-module-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0;
+        }
+
+        .data-module-count {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .add-btn-with-icon {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            color: #333;
+            transition: all 0.2s;
+        }
+
+        .add-btn-with-icon:hover {
+            background: #f5f5f5;
+            border-color: #2196F3;
+            color: #2196F3;
+        }
+
+        /* 兼容旧类名 */
+        .hreflang-wrapper {
+            margin-bottom: 0;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            padding: 4px;
+            cursor: pointer;
+            color: #666;
+            font-size: 16px;
+        }
+
+        .icon-btn:hover {
+            color: #2196F3;
+        }
+
+        .add-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            color: #2196F3;
+        }
+
+        .add-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .add-first-item {
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .add-first-item:hover {
+            background: #f5f5f5;
+            color: #2196F3;
+        }
+
+        .modal-footer {
+            padding: 16px 20px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            background: #fafafa;
+        }
+
+        .btn-cancel {
+            padding: 10px 24px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-cancel:hover {
+            background: #f5f5f5;
+        }
+
+        .btn-primary {
+            padding: 10px 24px;
+            background: #2196F3;
+            border: 1px solid #2196F3;
+            border-radius: 4px;
+            font-size: 14px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover {
+            background: #1976D2;
+            border-color: #1976D2;
+        }
+
+        .dropdown-icon {
+            font-size: 12px;
+        }
+
+        .collapsed .section-content {
+            display: none;
+        }
+
+        /* AI 弹窗样式 */
+        .ai-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .ai-modal-overlay.active {
+            display: flex;
+        }
+
+        .ai-modal {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 880px;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ai-modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .ai-modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ai-modal-title .info-icon {
+            width: 20px;
+            height: 20px;
+            background: #2196F3;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: help;
+        }
+
+        .ai-modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: #666;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        .ai-modal-close:hover {
+            color: #000;
+        }
+
+        .ai-modal-body {
+            padding: 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .ai-suggestion {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .ai-suggestion:last-child {
+            margin-bottom: 0;
+        }
+
+        .suggestion-header {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .suggestion-text {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 16px;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .use-text-btn {
+            background: linear-gradient(135deg, #2196F3 0%, #00BCD4 100%);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+        }
+
+        .use-text-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+        }
+
+        .use-text-btn:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Content Form</div>
+                <button class="modal-close">×</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="breadcrumb">
+                    <div class="page-type-label">Product Page</div>
+                    <div class="page-type-title">X7 / X7 Plus</div>
+                    <div class="breadcrumb-text">Product sunseeker-elite » global » products » x-series » x7</div>
+                </div>
+
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title">Page Properties</div>
+                        <div class="section-toggle">
+                            <span class="toggle-icon">✓</span>
+                            <span class="toggle-icon">^</span>
+                        </div>
+                    </div>
+                    <div class="section-content">
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="checkbox" id="disablePage">
+                            <label for="disablePage" class="checkbox-label">Disable Page</label>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Page URL
+                            </label>
+                            <div class="form-input-with-btn">
+                                <div class="input-wrapper">
+                                    <input type="text" class="form-input" value="/sunseeker-elite/global/products/x-series/" readonly>
+                                    <span class="char-count">2 / 50</span>
+                                </div>
+                                <button class="edit-btn">Edit</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                Internal Name <span class="checkmark">✓</span>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="text" class="form-input" value="X7 / X7 Plus">
+                                <span class="char-count">12 / 50</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-label-row">
+                                <label class="form-label">Breadcrumb Title</label>
+                                <div class="checkbox-group" style="margin-bottom: 0;">
+                                    <input type="checkbox" class="checkbox" id="hiddenNav">
+                                    <label for="hiddenNav" class="checkbox-label">hidden on the navigation</label>
+                                </div>
+                            </div>
+                            <div class="input-wrapper">
+                                <input type="text" class="form-input" value="">
+                                <span class="char-count">0 / 350</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Page Type</label>
+                            <select class="form-select" id="page-type-select">
+                                <option value="Product">Product</option>
+                                <option value="Article">Article</option>
+                                <option value="FAQPage">FAQPage</option>
+                                <option value="brand">brand</option>
+                                <option value="series">series</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">sort order <span class="checkmark">✓</span></label>
+                            <input type="number" class="form-input" value="0">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Description</label>
+                            <div class="textarea-wrapper">
+                                <textarea class="form-textarea"></textarea>
+                                <span class="textarea-count">0 / 300</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Theme</label>
+                            <select class="form-select">
+                                <option>Black</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Image</label>
+                            <div class="image-upload-new">
+                                <input type="text" class="form-input image-path-input" value="/static-assets/sites/sunseeker-elite/global/blog/are-robot-mowers-worth-the-money/blog-robot-mowers-worth-cover-1383x913-v1.jpg">
+                                <div class="image-preview-new">
+                                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='400' viewBox='0 0 800 400'%3E%3Crect fill='%23e8f5e9' width='800' height='400'/%3E%3Cg transform='translate(200 100)'%3E%3Crect x='0' y='80' width='400' height='180' rx='8' fill='%2381c784'/%3E%3Ccircle cx='50' cy='50' r='30' fill='%23ffd54f'/%3E%3Crect x='100' y='150' width='300' height='80' rx='40' fill='%234caf50'/%3E%3Cellipse cx='250' cy='320' rx='150' ry='20' fill='%2366bb6a' opacity='0.3'/%3E%3C/g%3E%3C/svg%3E" alt="Product Image">
+                                </div>
+                                <div class="image-actions-new">
+                                    <button class="btn-image">Replace</button>
+                                    <button class="btn-image btn-image-delete">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group data-module-wrapper">
+                            <label class="form-label">
+                                Product Data <span class="checkmark">✓</span>
+                            </label>
+                            <div class="data-module-container">
+                                <div class="data-module-item">
+                                    <div class="data-module-item-content">
+                                        <div class="data-module-item-title">X7 / X7 Plus</div>
+                                        <div class="data-module-item-path">/site/documents/sunseeker-elite/global/products/x-series/x7/index.xml</div>
+                                    </div>
+                                    <div class="data-module-item-icons">
+                                        <button class="icon-btn">✎</button>
+                                        <button class="icon-btn">🗑</button>
+                                    </div>
+                                </div>
+                                <div class="data-module-footer">
+                                    <span class="data-module-count">1 / 1</span>
+                                    <button class="add-btn-with-icon">
+                                        Add
+                                        <span>+</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group data-module-wrapper">
+                            <label class="form-label">
+                                Container <span class="checkmark">✓</span>
+                            </label>
+                            <div class="data-module-container">
+                                <div class="data-module-item">
+                                    <div class="data-module-item-content">
+                                        <div class="data-module-item-title">global elite x7</div>
+                                        <div class="data-module-item-path">/site/components/container/global-elite-x7.xml</div>
+                                    </div>
+                                    <div class="data-module-item-icons">
+                                        <button class="icon-btn">✎</button>
+                                        <button class="icon-btn">🗑</button>
+                                    </div>
+                                </div>
+                                <div class="data-module-footer">
+                                    <span class="data-module-count">1 / 1</span>
+                                    <button class="add-btn-with-icon">
+                                        Add
+                                        <span>+</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title">Basic SEO Setting</div>
+                        <div class="section-toggle">
+                            <span class="toggle-icon">✓</span>
+                            <span class="toggle-icon">^</span>
+                        </div>
+                    </div>
+                    <div class="section-content">
+                        <div class="form-group-with-ai">
+                            <div class="form-label-row">
+                                <label class="form-label">Title</label>
+                                <button class="create-ai-btn" data-target="title">
+                                    <span class="icon">✨</span>
+                                    Create AI Text
+                                </button>
+                            </div>
+                            <div class="input-wrapper">
+                                <input type="text" class="form-input" id="title-input" value="">
+                                <span class="char-count">0 / 350</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group-with-ai">
+                            <div class="form-label-row">
+                                <label class="form-label">Description</label>
+                                <button class="create-ai-btn" data-target="description">
+                                    <span class="icon">✨</span>
+                                    Create AI Text
+                                </button>
+                            </div>
+                            <div class="textarea-wrapper">
+                                <textarea class="form-textarea" id="description-input"></textarea>
+                                <span class="textarea-count">0 / 350</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Keywords</label>
+                            <button class="add-first-item">Add First Item</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-header">
+                        <div class="section-title">Advanced SEO Setting</div>
+                        <div class="section-toggle">
+                            <span class="toggle-icon">✓</span>
+                            <span class="toggle-icon">^</span>
+                        </div>
+                    </div>
+                    <div class="section-content">
+                        <div class="form-group-with-ai">
+                            <div class="form-label-row">
+                                <label class="form-label">H1</label>
+                                <button class="create-ai-btn" data-target="h1">
+                                    <span class="icon">✨</span>
+                                    Create AI Text
+                                </button>
+                            </div>
+                            <div class="input-wrapper">
+                                <input type="text" class="form-input" id="h1-input" value="">
+                                <span class="char-count">0 / 350</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group data-module-wrapper">
+                            <label class="form-label">
+                                Hreflang Config <span class="checkmark">✓</span>
+                            </label>
+                            <div class="data-module-container">
+                                <div class="data-module-item">
+                                    <div class="data-module-item-content">
+                                        <div class="data-module-item-title">X7 / X7 Plus</div>
+                                        <div class="data-module-item-path">/site/components/hreflang-config/7315b06b-58bc-52d0-6556-731614ff0078.xml</div>
+                                    </div>
+                                    <div class="data-module-item-icons">
+                                        <button class="icon-btn">✎</button>
+                                        <button class="icon-btn">🗑</button>
+                                    </div>
+                                </div>
+                                <div class="data-module-footer">
+                                    <span class="data-module-count">1 / 1</span>
+                                    <button class="add-btn-with-icon">
+                                        Add
+                                        <span>+</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group-with-ai">
+                            <div class="form-label-row">
+                                <label class="form-label">Schema Data</label>
+                                <button class="create-ai-btn" id="schema-create-ai-btn" data-target="schema" style="display: none;">
+                                    <span class="icon">✨</span>
+                                    Create AI Text
+                                </button>
+                            </div>
+                            <div class="textarea-wrapper">
+                                <textarea class="form-textarea" id="schema-data-input" style="min-height: 200px;"></textarea>
+                                <span class="textarea-count">0 / 5000</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-cancel">Cancel</button>
+                <button class="btn-primary">
+                    Save & Close
+                    <span class="dropdown-icon">▼</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Meta Tag Creator 弹窗 -->
+    <div class="ai-modal-overlay" id="aiModal">
+        <div class="ai-modal">
+            <div class="ai-modal-header">
+                <div class="ai-modal-title">
+                    AI Meta Tag Creator
+                    <span class="info-icon">i</span>
+                </div>
+                <button class="ai-modal-close" onclick="closeAIModal()">×</button>
+            </div>
+            <div class="ai-modal-body">
+                <div class="ai-suggestion">
+                    <div class="suggestion-header">Suggestion 1</div>
+                    <div class="suggestion-text" data-suggestion="1"></div>
+                    <button class="use-text-btn" onclick="useSuggestion(1)">Use Text</button>
+                </div>
+                <div class="ai-suggestion">
+                    <div class="suggestion-header">Suggestion 2</div>
+                    <div class="suggestion-text" data-suggestion="2"></div>
+                    <button class="use-text-btn" onclick="useSuggestion(2)">Use Text</button>
+                </div>
+                <div class="ai-suggestion">
+                    <div class="suggestion-header">Suggestion 3</div>
+                    <div class="suggestion-text" data-suggestion="3"></div>
+                    <button class="use-text-btn" onclick="useSuggestion(3)">Use Text</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // AI 文本建议数据
+        const aiSuggestions = {
+            title: [
+                "X7 / X7 Plus - Advanced Robotic Mower with AONavi™ Technology - Sunseeker Elite",
+                "Sunseeker Elite X7 Series | Smart Lawn Mowing for Large Yards up to 6000m²",
+                "X7 / X7 Plus Robot Mower - All-Wheel Drive & AI Navigation - Sunseeker Elite"
+            ],
+            description: [
+                "Discover the Sunseeker Elite X7 / X7 Plus, a cutting-edge robotic mower designed for large yards up to 6000m². Featuring AONavi™ positioning, Vision AI technology, and AWD capability for 70% slopes, it offers intelligent, efficient, and secure mowing solutions.",
+                "Experience effortless lawn care with the X7 / X7 Plus robotic mower. Advanced AONavi™ navigation system, all-wheel drive for steep slopes, and 4G connectivity ensure your lawn stays perfect year-round. Ideal for yards up to 6000m².",
+                "The ultimate smart mowing solution - Sunseeker Elite X7 / X7 Plus combines AONavi™ precision positioning, Vision AI obstacle detection, and powerful AWD for slopes up to 70%. With 4G anti-theft protection, enjoy worry-free automated lawn maintenance."
+            ],
+            h1: [
+                "Sunseeker Elite X7 / X7 Plus",
+                "X7 Robot Mower - Smart Lawn Care Solution",
+                "Premium X7 Series Robotic Mower"
+            ]
+        };
+
+        let currentTarget = null;
+
+        // Schema Data 模板 - 按 Page Type 分类
+        const schemaDataTemplates = {
+            Product: {
+                "@context": "https://schema.org",
+                "@type": "Product",
+                "name": "Sunseeker Elite X7 / X7 Plus",
+                "description": "Advanced robotic mower for large yards up to 6000m². Features AONavi™ positioning, Vision AI, and AWD for 70% slopes.",
+                "brand": {
+                    "@type": "Brand",
+                    "name": "Sunseeker Elite"
+                },
+                "offers": {
+                    "@type": "Offer",
+                    "priceCurrency": "USD",
+                    "price": "2999.00",
+                    "availability": "https://schema.org/InStock"
+                }
+            },
+            Article: {
+                "@context": "https://schema.org",
+                "@type": "Article",
+                "headline": "The Ultimate Guide to Robotic Lawn Mowers",
+                "author": {
+                    "@type": "Person",
+                    "name": "Sunseeker Elite Team"
+                },
+                "datePublished": "2024-01-01",
+                "dateModified": "2024-12-26",
+                "publisher": {
+                    "@type": "Organization",
+                    "name": "Sunseeker Elite",
+                    "logo": {
+                        "@type": "ImageObject",
+                        "url": "https://example.com/logo.png"
+                    }
+                }
+            },
+            FAQPage: {
+                "@context": "https://schema.org",
+                "@type": "FAQPage",
+                "mainEntity": [
+                    {
+                        "@type": "Question",
+                        "name": "Do robot mowers work on uneven or sloped lawns?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "Yes, most modern robot mowers can handle uneven terrain and moderate slopes. Premium models like the Sunseeker X-Series feature an all-terrain adaptive drive system that maintains traction and cutting precision even on slopes up to 35°, ensuring a smooth, consistent trim."
+                        }
+                    },
+                    {
+                        "@type": "Question",
+                        "name": "Can robot mowers handle large lawns?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "Absolutely. While smaller models are designed for compact gardens, higher-capacity units can cover up to several thousand square meters. They use smart navigation and multi-zone mapping to ensure efficient mowing across wide, complex lawns without missing spots."
+                        }
+                    },
+                    {
+                        "@type": "Question",
+                        "name": "Do robot mowers work on wet grass?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "Yes. Most robot mowers are equipped with lift and tilt sensors that stop the blades instantly if disturbed. Their low cutting height and enclosed design minimize exposure, making them safe to operate even when pets or children are nearby."
+                        }
+                    }
+                ]
+            },
+            brand: {
+                "@context": "https://schema.org",
+                "@type": "Brand",
+                "name": "Sunseeker Elite",
+                "description": "Leading manufacturer of advanced robotic lawn mowers",
+                "logo": "https://example.com/logo.png",
+                "url": "https://example.com"
+            }
+        };
+
+        // 打开 AI 弹窗
+        function openAIModal(target) {
+            currentTarget = target;
+            const modal = document.getElementById('aiModal');
+            
+            if (target === 'schema') {
+                // Schema Data 特殊处理 - 根据当前Page Type生成
+                const pageType = document.getElementById('page-type-select').value;
+                const schemaTemplate = schemaDataTemplates[pageType];
+                
+                if (schemaTemplate) {
+                    const formattedJson = JSON.stringify(schemaTemplate, null, 2);
+                    // 只显示一个建议
+                    document.querySelectorAll('.ai-suggestion').forEach((el, index) => {
+                        const textEl = el.querySelector('.suggestion-text');
+                        if (index === 0) {
+                            el.style.display = 'block';
+                            textEl.textContent = formattedJson;
+                            textEl.style.fontFamily = "'Courier New', monospace";
+                            textEl.style.fontSize = "12px";
+                            textEl.style.background = "#f8f9fa";
+                            textEl.style.padding = "12px";
+                            textEl.style.borderRadius = "4px";
+                            el.querySelector('.suggestion-header').textContent = `${pageType} Schema`;
+                        } else {
+                            el.style.display = 'none';
+                        }
+                    });
+                }
+            } else {
+                // Title, Description, H1 使用原来的逻辑
+                const suggestions = aiSuggestions[target];
+                document.querySelectorAll('.ai-suggestion').forEach((el, index) => {
+                    const textEl = el.querySelector('.suggestion-text');
+                    el.style.display = 'block';
+                    textEl.textContent = suggestions[index];
+                    textEl.style.fontFamily = "";
+                    textEl.style.fontSize = "";
+                    textEl.style.background = "";
+                    textEl.style.padding = "";
+                    textEl.style.borderRadius = "";
+                    el.querySelector('.suggestion-header').textContent = `Suggestion ${index + 1}`;
+                });
+            }
+            
+            modal.classList.add('active');
+        }
+
+        // 关闭 AI 弹窗
+        function closeAIModal() {
+            const modal = document.getElementById('aiModal');
+            modal.classList.remove('active');
+            currentTarget = null;
+        }
+
+        // 使用建议文本
+        function useSuggestion(index) {
+            if (!currentTarget) return;
+            
+            let text;
+            let inputId;
+            
+            // 根据不同的目标字段获取对应的输入框 ID 和文本
+            if (currentTarget === 'schema') {
+                // Schema Data 特殊处理
+                const pageType = document.getElementById('page-type-select').value;
+                const schemaTemplate = schemaDataTemplates[pageType];
+                text = JSON.stringify(schemaTemplate, null, 2);
+                inputId = 'schema-data-input';
+            } else {
+                // Title, Description, H1 使用原来的逻辑
+                text = aiSuggestions[currentTarget][index - 1];
+                if (currentTarget === 'title') {
+                    inputId = 'title-input';
+                } else if (currentTarget === 'description') {
+                    inputId = 'description-input';
+                } else if (currentTarget === 'h1') {
+                    inputId = 'h1-input';
+                }
+            }
+            
+            const input = document.getElementById(inputId);
+            
+            input.value = text;
+            
+            // 更新字符计数
+            const wrapper = input.closest('.input-wrapper, .textarea-wrapper');
+            if (wrapper) {
+                const counter = wrapper.querySelector('.char-count, .textarea-count');
+                if (counter) {
+                    const max = counter.textContent.split('/')[1].trim();
+                    counter.textContent = `${text.length} / ${max}`;
+                }
+            }
+            
+            // 关闭弹窗
+            closeAIModal();
+        }
+
+        // Page Type 改变事件 - 显示/隐藏 Create AI Text 按钮
+        const pageTypeSelect = document.getElementById('page-type-select');
+        const schemaDataInput = document.getElementById('schema-data-input');
+        const schemaCreateAIBtn = document.getElementById('schema-create-ai-btn');
+        
+        // 定义支持 Schema Data AI 生成的页面类型
+        const schemaAIEnabledTypes = ['Product', 'Article', 'FAQPage', 'brand'];
+        
+        pageTypeSelect.addEventListener('change', function() {
+            const selectedType = this.value;
+            
+            // 根据 Page Type 显示/隐藏 Create AI Text 按钮
+            if (schemaAIEnabledTypes.includes(selectedType)) {
+                schemaCreateAIBtn.style.display = 'flex';
+            } else {
+                schemaCreateAIBtn.style.display = 'none';
+            }
+            
+            // 如果是 series 类型，清空 Schema Data
+            if (selectedType === 'series') {
+                schemaDataInput.value = '';
+                
+                // 更新字符计数
+                const wrapper = schemaDataInput.closest('.textarea-wrapper');
+                if (wrapper) {
+                    const counter = wrapper.querySelector('.textarea-count');
+                    if (counter) {
+                        const max = counter.textContent.split('/')[1].trim();
+                        counter.textContent = `0 / ${max}`;
+                    }
+                }
+            }
+        });
+        
+        // 初始化时根据当前 Page Type 设置按钮可见性
+        if (schemaAIEnabledTypes.includes(pageTypeSelect.value)) {
+            schemaCreateAIBtn.style.display = 'flex';
+        }
+
+        // 添加 Create AI Text 按钮点击事件
+        document.querySelectorAll('.create-ai-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = btn.getAttribute('data-target');
+                openAIModal(target);
+            });
+        });
+
+        // 点击弹窗外部关闭
+        document.getElementById('aiModal').addEventListener('click', (e) => {
+            if (e.target.id === 'aiModal') {
+                closeAIModal();
+            }
+        });
+
+        // 添加交互功能
+        document.querySelectorAll('.section-header').forEach(header => {
+            header.addEventListener('click', () => {
+                header.closest('.section').classList.toggle('collapsed');
+            });
+        });
+
+        // 字符计数功能
+        document.querySelectorAll('.form-input, .form-textarea').forEach(input => {
+            input.addEventListener('input', function() {
+                const wrapper = this.closest('.input-wrapper, .textarea-wrapper');
+                if (wrapper) {
+                    const counter = wrapper.querySelector('.char-count, .textarea-count');
+                    if (counter) {
+                        const max = counter.textContent.split('/')[1].trim();
+                        counter.textContent = `${this.value.length} / ${max}`;
+                    }
+                }
+            });
+        });
+
+        // 模拟关闭按钮
+        document.querySelector('.modal-close').addEventListener('click', () => {
+            alert('关闭表单');
+        });
+
+        document.querySelector('.btn-cancel').addEventListener('click', () => {
+            alert('取消操作');
+        });
+
+        document.querySelector('.btn-primary').addEventListener('click', () => {
+            alert('保存并关闭');
+        });
+    </script>
+</body>
+</html>
+
